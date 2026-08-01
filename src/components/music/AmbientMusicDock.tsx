@@ -62,7 +62,7 @@ export const AmbientMusicDock: React.FC = () => {
       {open && (
         <div
           ref={panelRef}
-          className="pointer-events-auto absolute bottom-16 right-0 w-[220px] max-h-[min(60vh,420px)] overflow-y-auto p-3 rounded-2xl bg-white/90 border border-[var(--maru-border-soft)] shadow-[0_12px_40px_rgba(15,23,36,0.18)] backdrop-blur-md space-y-2.5 animate-[maruFloatIn_0.2s_ease-out]"
+          className="pointer-events-auto absolute bottom-16 right-0 w-[220px] max-h-[min(60vh,420px)] overflow-y-auto p-3 rounded-2xl bg-[var(--maru-surface)]/95 border border-[var(--maru-border)] text-[var(--maru-text)] shadow-[var(--maru-shadow-md)] backdrop-blur-md space-y-2.5 animate-[maruFloatIn_0.2s_ease-out]"
         >
           <div className="text-xs font-bold text-[var(--maru-text)] flex items-center justify-between gap-2">
             <span className="flex items-center gap-1.5">
@@ -121,7 +121,7 @@ export const AmbientMusicDock: React.FC = () => {
       <div className="pointer-events-auto flex items-center gap-2">
         <button
           onClick={() => setOpen((o) => !o)}
-          className="px-3 py-2 rounded-xl bg-white/90 backdrop-blur border border-[var(--maru-border-soft)] text-xs font-bold text-[var(--maru-text)] shadow-sm"
+          className="px-3 py-2 rounded-xl bg-[var(--maru-surface)]/95 backdrop-blur border border-[var(--maru-border)] text-xs font-bold text-[var(--maru-text)] shadow-sm"
         >
           Mezcla
         </button>

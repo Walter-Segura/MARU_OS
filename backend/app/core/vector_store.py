@@ -64,12 +64,13 @@ class VectorMemoryStore:
             if not vector or len(vector) != 768:
                 return []
 
-            results = await self.client.search(
+            response = await self.client.query_points(
                 collection_name=self.collection_name,
-                query_vector=vector,
-                limit=limit
+                query=vector,
+                limit=limit,
+                with_payload=True,
             )
-            return [hit.payload for hit in results]
+            return [hit.payload for hit in response.points if hit.payload]
         except Exception as e:
             logger.error(f"Error searching Qdrant: {e}")
             return []

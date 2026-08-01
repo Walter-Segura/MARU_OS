@@ -152,7 +152,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </section>
           <button
             onClick={onLogout}
-            className="w-full min-h-10 flex items-center gap-3 px-3 py-2 rounded-[10px] text-sm text-[var(--maru-danger)] hover:bg-red-50"
+            className="w-full min-h-10 flex items-center gap-3 px-3 py-2 rounded-[10px] text-sm text-[var(--maru-danger)] hover:bg-[rgba(240,138,130,0.12)]"
             title="Cerrar sesión"
           >
             <LogOut size={18} className="shrink-0" />
@@ -220,7 +220,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
 
         {isEphemeralMode && (
-          <div className="hidden md:flex items-center gap-2 px-2.5 py-1 rounded bg-red-50 text-[var(--maru-danger)] border border-red-200">
+          <div className="hidden md:flex items-center gap-2 px-2.5 py-1 rounded bg-[rgba(240,138,130,0.12)] text-[var(--maru-danger)] border border-[rgba(240,138,130,0.35)]">
             <Flame size={12} className="animate-pulse" />
             <span className="font-semibold text-[10px]">Modo Efímero ON</span>
           </div>

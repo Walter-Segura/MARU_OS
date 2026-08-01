@@ -168,8 +168,25 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   const resolvedTheme = resolveThemeMode(themeMode);
   const audioRef = React.useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(0.4);
+  const [volume, setVolume] = useState(0.55);
   const [showVolumeMenu, setShowVolumeMenu] = useState(false);
+  const unlockedRef = React.useRef(false);
+
+  const tryPlayAudio = React.useCallback(async () => {
+    const audio = audioRef.current;
+    if (!audio) return false;
+    try {
+      audio.muted = false;
+      audio.volume = volume;
+      await audio.play();
+      setIsPlaying(true);
+      unlockedRef.current = true;
+      return true;
+    } catch {
+      setIsPlaying(false);
+      return false;
+    }
+  }, [volume]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -177,18 +194,40 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     }
   }, [volume]);
 
-  // Attempt initial autoplay if allowed by browser
+  // Sync UI with actual audio element state
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume;
-      const playPromise = audioRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => setIsPlaying(true))
-          .catch(() => setIsPlaying(false));
-      }
-    }
-    // Solo al montar: el volumen se sincroniza en handleVolumeChange
+    const audio = audioRef.current;
+    if (!audio) return;
+    const onPlay = () => setIsPlaying(true);
+    const onPause = () => setIsPlaying(false);
+    audio.addEventListener('play', onPlay);
+    audio.addEventListener('pause', onPause);
+    return () => {
+      audio.removeEventListener('play', onPlay);
+      audio.removeEventListener('pause', onPause);
+    };
+  }, []);
+
+  // Autoplay often blocked — unlock on first user gesture anywhere on the page
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.volume = volume;
+    audio.load();
+
+    void tryPlayAudio();
+
+    const unlock = () => {
+      if (unlockedRef.current && !audio.paused) return;
+      void tryPlayAudio();
+    };
+
+    window.addEventListener('pointerdown', unlock, { once: true });
+    window.addEventListener('keydown', unlock, { once: true });
+    return () => {
+      window.removeEventListener('pointerdown', unlock);
+      window.removeEventListener('keydown', unlock);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -208,12 +247,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   };
 
   const togglePlay = () => {
-    if (!audioRef.current) return;
-    if (isPlaying) {
-      audioRef.current.pause();
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (!audio.paused) {
+      audio.pause();
       setIsPlaying(false);
     } else {
-      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
+      void tryPlayAudio();
     }
   };
 
@@ -226,9 +266,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     const newVol = parseFloat(e.target.value);
     applyVolume(newVol);
     if (audioRef.current) {
-      if (newVol > 0 && !isPlaying) {
-        audioRef.current.play().then(() => setIsPlaying(true)).catch(() => { });
-      } else if (newVol === 0 && isPlaying) {
+      if (newVol > 0 && audioRef.current.paused) {
+        void tryPlayAudio();
+      } else if (newVol === 0 && !audioRef.current.paused) {
         audioRef.current.pause();
         setIsPlaying(false);
       }
@@ -245,7 +285,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   return (
     <div className="relative min-h-screen bg-[var(--maru-bg)] text-[var(--maru-text)] font-sans overflow-x-hidden">
       {/* Background audio — musica-portada.mp3 */}
-      <audio ref={audioRef} src="/musica-portada.mp3" loop />
+      <audio
+        ref={audioRef}
+        src="/musica-portada.mp3"
+        loop
+        preload="auto"
+        playsInline
+      />
 
       {/* ── HERO ── */}
       <section id="inicio" className="relative min-h-screen flex flex-col">
@@ -309,7 +355,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 onClick={() => persistTheme('night')}
                 className={`flex items-center gap-1 px-2.5 py-1.5 rounded-[10px] text-[11px] font-display font-semibold transition-colors ${
                   resolvedTheme === 'dark'
-                    ? 'bg-[#1a3d48] text-[#9fe0d6]'
+                    ? 'bg-[var(--maru-surface)] text-[var(--maru-primary)]'
                     : 'text-white/70 hover:text-white'
                 }`}
                 title="Modo oscuro"
@@ -323,7 +369,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             <div className="relative">
               <button
                 type="button"
-                onClick={() => setShowVolumeMenu(!showVolumeMenu)}
+                onClick={() => {
+                  setShowVolumeMenu((open) => !open);
+                  // Primer toque: desbloquear autoplay del navegador
+                  if (audioRef.current?.paused) void tryPlayAudio();
+                }}
                 className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-display font-semibold border border-white/30 text-white bg-black/30 hover:bg-black/50 backdrop-blur-md transition-all shadow-sm"
                 title="Música de Portada"
               >
@@ -497,40 +547,63 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               initial={{ opacity: 0, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-              className="relative max-w-xl rounded-2xl border border-[#e8e0d0]/80 bg-[#f8f5ed]/92 p-6 sm:p-8 shadow-[0_24px_70px_rgba(9,35,43,0.35)] backdrop-blur-xl"
+              className={`relative max-w-xl rounded-2xl border p-6 sm:p-8 shadow-[0_24px_70px_rgba(9,35,43,0.35)] backdrop-blur-xl ${
+                resolvedTheme === 'dark'
+                  ? 'border-[var(--maru-border)] bg-[color-mix(in_srgb,var(--maru-surface)_88%,transparent)]'
+                  : 'border-[#e8e0d0]/80 bg-[#f8f5ed]/92'
+              }`}
               style={{
-                textShadow: '0 1px 0 rgba(248,245,237,0.6)'
+                textShadow:
+                  resolvedTheme === 'dark'
+                    ? '0 1px 0 rgba(10,26,32,0.35)'
+                    : '0 1px 0 rgba(248,245,237,0.6)'
               }}
             >
               <div
                 className="pointer-events-none absolute inset-0 rounded-2xl"
                 style={{
                   background:
-                    'linear-gradient(145deg, rgba(248,245,237,0.55) 0%, transparent 55%), radial-gradient(ellipse at 20% 0%, rgba(20,125,120,0.08), transparent 50%)'
+                    resolvedTheme === 'dark'
+                      ? 'linear-gradient(145deg, rgba(61,184,176,0.12) 0%, transparent 55%), radial-gradient(ellipse at 20% 0%, rgba(212,176,106,0.1), transparent 50%)'
+                      : 'linear-gradient(145deg, rgba(248,245,237,0.55) 0%, transparent 55%), radial-gradient(ellipse at 20% 0%, rgba(20,125,120,0.08), transparent 50%)'
                 }}
               />
               <div className="relative">
                 <h1
-                  className="text-[2.5rem] sm:text-5xl lg:text-[3.45rem] font-bold leading-[1.03] tracking-tight text-[#142d35]"
+                  className={`text-[2.5rem] sm:text-5xl lg:text-[3.45rem] font-bold leading-[1.03] tracking-tight ${
+                    resolvedTheme === 'dark' ? 'text-[var(--maru-text)]' : 'text-[#142d35]'
+                  }`}
                   style={{
                     fontFamily: "'Cormorant Garamond', Georgia, serif",
-                    textShadow: '0 1px 2px rgba(248,245,237,0.9), 0 2px 12px rgba(20,45,53,0.12)'
+                    textShadow:
+                      resolvedTheme === 'dark'
+                        ? '0 2px 18px rgba(0,0,0,0.45)'
+                        : '0 1px 2px rgba(248,245,237,0.9), 0 2px 12px rgba(20,45,53,0.12)'
                   }}
                 >
                   El primer sistema
                   <br />
                   operativo cognitivo
                   <br />
-                  <em className="italic font-semibold text-[#0f6965]">con alma.</em>
+                  <em
+                    className={`italic font-semibold ${
+                      resolvedTheme === 'dark' ? 'text-[var(--maru-primary)]' : 'text-[#0f6965]'
+                    }`}
+                  >
+                    con alma.
+                  </em>
                 </h1>
 
-                <div className="mt-5 h-[3px] w-14 rounded-full bg-[#b3883c]" />
+                <div className="mt-5 h-[3px] w-14 rounded-full bg-[var(--maru-gold)]" />
 
                 <p
-                  className="mt-6 text-[15px] sm:text-base leading-relaxed text-[#3d5258] max-w-md"
+                  className={`mt-6 text-[15px] sm:text-base leading-relaxed max-w-md ${
+                    resolvedTheme === 'dark' ? 'text-[var(--maru-text-muted)]' : 'text-[#3d5258]'
+                  }`}
                   style={{
                     fontFamily: "'DM Sans', system-ui, sans-serif",
-                    textShadow: '0 1px 1px rgba(248,245,237,0.85)'
+                    textShadow:
+                      resolvedTheme === 'dark' ? 'none' : '0 1px 1px rgba(248,245,237,0.85)'
                   }}
                 >
                   Impulsado por una arquitectura híbrida edge-cloud basada en modelos Gemma.
@@ -551,7 +624,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   <button
                     type="button"
                     onClick={() => scrollTo('arquitectura')}
-                    className="inline-flex items-center justify-center gap-2 min-h-10 px-6 py-3.5 rounded-[10px] text-sm font-display font-semibold border border-[#142d35]/25 text-[#0f6965] bg-white/85 hover:bg-white transition-colors"
+                    className={`inline-flex items-center justify-center gap-2 min-h-10 px-6 py-3.5 rounded-[10px] text-sm font-display font-semibold border transition-colors ${
+                      resolvedTheme === 'dark'
+                        ? 'border-[var(--maru-border)] text-[var(--maru-primary)] bg-[var(--maru-surface-muted)] hover:bg-[var(--maru-bg-elevated)]'
+                        : 'border-[#142d35]/25 text-[#0f6965] bg-white/85 hover:bg-white'
+                    }`}
                   >
                     <Box size={16} />
                     Ver Arquitectura
@@ -559,7 +636,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   <button
                     type="button"
                     onClick={onOpenLogin}
-                    className="inline-flex items-center justify-center gap-2 min-h-10 px-4 py-3.5 rounded-[10px] text-sm font-display font-semibold text-[#3d5258] hover:text-[#142d35] hover:bg-[#142d35]/06 transition-colors"
+                    className={`inline-flex items-center justify-center gap-2 min-h-10 px-4 py-3.5 rounded-[10px] text-sm font-display font-semibold transition-colors ${
+                      resolvedTheme === 'dark'
+                        ? 'text-[var(--maru-text-muted)] hover:text-[var(--maru-text)] hover:bg-white/5'
+                        : 'text-[#3d5258] hover:text-[#142d35] hover:bg-[#142d35]/06'
+                    }`}
                   >
                     Ya tengo cuenta
                   </button>
@@ -638,7 +719,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   </div>
 
                   <div className="flex flex-1 flex-col p-5">
-                    <p className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.16em] text-[#c4b5fd] mb-2">
+                    <p className="maru-impact-eyebrow text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.16em] mb-2">
                       {item.eyebrow}
                     </p>
                     <h3 className="font-display font-semibold text-lg text-white leading-snug">
@@ -667,7 +748,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                               setExpandedImpact(null);
                               scrollTo(item.anchor);
                             }}
-                            className="mt-3 text-xs font-display font-semibold text-[#c4b5fd] hover:text-white underline-offset-4 hover:underline transition-colors"
+                            className="mt-3 text-xs font-display font-semibold text-[var(--maru-gold-soft)] hover:text-white underline-offset-4 hover:underline transition-colors"
                           >
                             Ver en el ecosistema →
                           </button>

@@ -38,38 +38,238 @@
   --maru-teal: var(--maru-primary);
 }
 
-/* Andean night — teal-navy void, cream accents (not purple-on-white) */
+/*
+  Night mode — clear layer stack + WCAG-friendly contrast
+  bg < elevated < muted < surface < border < text
+*/
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --maru-void: #0a1a20;
-  --maru-bg: #102b35;
-  --maru-bg-elevated: #163540;
-  --maru-surface: #1a3d48;
-  --maru-surface-muted: #14323c;
+  --maru-void: #050b0e;
+  --maru-bg: #0a1216;
+  --maru-bg-elevated: #111c22;
+  --maru-surface: #1a2a32;
+  --maru-surface-muted: #142229;
   --maru-surface-2: var(--maru-surface-muted);
-  --maru-text: #eef3f1;
-  --maru-text-muted: #a8b8ba;
-  --maru-text-dim: #7a8e90;
-  --maru-primary: #3db8b0;
-  --maru-primary-hover: #52c9c1;
-  --maru-primary-soft: rgba(61, 184, 176, 0.16);
-  --maru-gold: #d4b06a;
-  --maru-gold-soft: #c4a56e;
-  --maru-gold-deep: #e0c48a;
-  --maru-amber: #d49a4a;
-  --maru-danger: #e07870;
-  --maru-success: #5cb892;
-  --maru-border: #2a4a55;
-  --maru-border-soft: #234048;
-  --maru-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25), 0 5px 16px rgba(0, 0, 0, 0.18);
-  --maru-shadow-md: 0 16px 44px rgba(0, 0, 0, 0.35);
-  --maru-read-bg: #14323c;
+  --maru-text: #f2f6f5;
+  --maru-text-muted: #b0c0c2;
+  --maru-text-dim: #849599;
+  --maru-primary: #5fd4cb;
+  --maru-primary-hover: #7ee0d8;
+  --maru-primary-soft: rgba(95, 212, 203, 0.16);
+  --maru-gold: #e2c07a;
+  --maru-gold-soft: #d0b273;
+  --maru-gold-deep: #f0d49a;
+  --maru-amber: #e0a454;
+  --maru-danger: #f08a82;
+  --maru-success: #6dca9f;
+  --maru-border: #355662;
+  --maru-border-soft: #283f49;
+  --maru-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35), 0 6px 18px rgba(0, 0, 0, 0.28);
+  --maru-shadow-md: 0 18px 48px rgba(0, 0, 0, 0.45);
+  --maru-read-bg: #111c22;
   --maru-read-ink: var(--maru-text);
   --maru-read-muted: var(--maru-text-muted);
   --maru-read-card: var(--maru-surface);
   --maru-read-line: var(--maru-border-soft);
   --maru-navy: var(--maru-text);
   --maru-teal: var(--maru-primary);
+}
+
+html,
+body,
+#root {
+  background: var(--maru-bg);
+  color: var(--maru-text);
+  min-height: 100%;
+}
+
+:root[data-theme="dark"] ::selection {
+  background: rgba(95, 212, 203, 0.35);
+  color: var(--maru-text);
+}
+
+:root[data-theme="dark"] ::placeholder {
+  color: var(--maru-text-dim);
+  opacity: 1;
+}
+
+:root[data-theme="dark"] .maru-btn-primary,
+:root[data-theme="dark"] .maru-btn-gold {
+  color: #061014 !important;
+  background: var(--maru-primary) !important;
+  border-color: var(--maru-primary) !important;
+  box-shadow: 0 6px 18px rgba(95, 212, 203, 0.22);
+}
+
+:root[data-theme="dark"] .maru-btn-primary:hover,
+:root[data-theme="dark"] .maru-btn-gold:hover {
+  background: var(--maru-primary-hover) !important;
+  border-color: var(--maru-primary-hover) !important;
+  color: #061014 !important;
+}
+
+:root[data-theme="dark"] .maru-field:focus {
+  box-shadow: 0 0 0 3px rgba(95, 212, 203, 0.22);
+}
+
+:root[data-theme="dark"] .maru-status-success {
+  color: var(--maru-success);
+  background: rgba(109, 202, 159, 0.14);
+}
+:root[data-theme="dark"] .maru-status-warning {
+  color: var(--maru-amber);
+  background: rgba(224, 164, 84, 0.14);
+}
+:root[data-theme="dark"] .maru-status-danger {
+  color: var(--maru-danger);
+  background: rgba(240, 138, 130, 0.14);
+}
+
+/* ── Remap hard-coded light/iOS colors across the whole app ── */
+:root[data-theme="dark"] .bg-white,
+:root[data-theme="dark"] .bg-white\/95,
+:root[data-theme="dark"] .bg-white\/90,
+:root[data-theme="dark"] .bg-white\/85,
+:root[data-theme="dark"] .bg-white\/80,
+:root[data-theme="dark"] .bg-white\/70 {
+  background-color: var(--maru-surface) !important;
+  color: var(--maru-text);
+}
+:root[data-theme="dark"] .bg-white\/60,
+:root[data-theme="dark"] .bg-white\/50,
+:root[data-theme="dark"] .bg-white\/40 {
+  background-color: color-mix(in srgb, var(--maru-surface) 72%, transparent) !important;
+}
+:root[data-theme="dark"] .bg-white\/30,
+:root[data-theme="dark"] .bg-white\/20,
+:root[data-theme="dark"] .bg-white\/10,
+:root[data-theme="dark"] .bg-white\/5 {
+  background-color: color-mix(in srgb, var(--maru-surface) 40%, transparent) !important;
+}
+:root[data-theme="dark"] .hover\:bg-white:hover,
+:root[data-theme="dark"] .hover\:bg-gray-50:hover,
+:root[data-theme="dark"] .hover\:bg-slate-50:hover,
+:root[data-theme="dark"] .hover\:bg-slate-100:hover,
+:root[data-theme="dark"] .hover\:bg-slate-200:hover {
+  background-color: var(--maru-bg-elevated) !important;
+}
+
+:root[data-theme="dark"] .bg-gray-50,
+:root[data-theme="dark"] .bg-gray-100,
+:root[data-theme="dark"] .bg-slate-50,
+:root[data-theme="dark"] .bg-slate-100,
+:root[data-theme="dark"] .bg-slate-200 {
+  background-color: var(--maru-surface-muted) !important;
+  color: var(--maru-text);
+}
+:root[data-theme="dark"] .bg-slate-700,
+:root[data-theme="dark"] .bg-slate-800 {
+  background-color: var(--maru-bg-elevated) !important;
+}
+:root[data-theme="dark"] .text-slate-600,
+:root[data-theme="dark"] .text-slate-700,
+:root[data-theme="dark"] .text-gray-600,
+:root[data-theme="dark"] .text-gray-700,
+:root[data-theme="dark"] .text-gray-800 {
+  color: var(--maru-text-muted) !important;
+}
+:root[data-theme="dark"] .text-slate-500,
+:root[data-theme="dark"] .text-gray-500 {
+  color: var(--maru-text-dim) !important;
+}
+:root[data-theme="dark"] .border-slate-200,
+:root[data-theme="dark"] .border-gray-200 {
+  border-color: var(--maru-border-soft) !important;
+}
+
+:root[data-theme="dark"] .bg-red-50,
+:root[data-theme="dark"] .hover\:bg-red-50:hover {
+  background-color: rgba(240, 138, 130, 0.12) !important;
+}
+:root[data-theme="dark"] .border-red-200 {
+  border-color: rgba(240, 138, 130, 0.35) !important;
+}
+
+/* iOS / Apple system greys & accents used in Settings and panels */
+:root[data-theme="dark"] [class*="bg-[#F2F2F7]"],
+:root[data-theme="dark"] [class*="bg-[#F5F1E8]"],
+:root[data-theme="dark"] [class*="bg-[#f8f5ed]"],
+:root[data-theme="dark"] [class*="bg-[#F8F5ED]"] {
+  background-color: var(--maru-surface-muted) !important;
+}
+:root[data-theme="dark"] [class*="bg-[#E5E5EA]"] {
+  background-color: var(--maru-border) !important;
+}
+:root[data-theme="dark"] [class*="text-[#007AFF]"],
+:root[data-theme="dark"] [class*="text-[#5856D6]"],
+:root[data-theme="dark"] [class*="text-[#1E3A5F]"],
+:root[data-theme="dark"] [class*="text-[#142d35]"],
+:root[data-theme="dark"] [class*="text-[#0f6965]"],
+:root[data-theme="dark"] [class*="text-[#4A9B9D]"] {
+  color: var(--maru-primary) !important;
+}
+:root[data-theme="dark"] [class*="text-[#3d5258]"],
+:root[data-theme="dark"] [class*="text-[#5c6f73]"],
+:root[data-theme="dark"] [class*="text-[#8E8E93]"] {
+  color: var(--maru-text-muted) !important;
+}
+:root[data-theme="dark"] [class*="text-[#B8924A]"],
+:root[data-theme="dark"] [class*="text-[#FF9500]"] {
+  color: var(--maru-gold) !important;
+}
+:root[data-theme="dark"] [class*="text-[#34C759]"] {
+  color: var(--maru-success) !important;
+}
+:root[data-theme="dark"] [class*="text-[#FF3B30]"],
+:root[data-theme="dark"] [class*="text-[#C0392B]"] {
+  color: var(--maru-danger) !important;
+}
+:root[data-theme="dark"] [class*="bg-[#007AFF]"],
+:root[data-theme="dark"] [class*="bg-[#5856D6]"],
+:root[data-theme="dark"] [class*="bg-[#1E3A5F]"] {
+  background-color: var(--maru-primary) !important;
+  color: #061014 !important;
+}
+:root[data-theme="dark"] [class*="hover:bg-[#0056B3]"]:hover,
+:root[data-theme="dark"] [class*="hover:bg-[#142843]"]:hover {
+  background-color: var(--maru-primary-hover) !important;
+  color: #061014 !important;
+}
+:root[data-theme="dark"] [class*="border-[#5856D6]"],
+:root[data-theme="dark"] [class*="border-[#007AFF]"],
+:root[data-theme="dark"] [class*="border-[#142d35]"] {
+  border-color: color-mix(in srgb, var(--maru-primary) 55%, var(--maru-border)) !important;
+}
+:root[data-theme="dark"] [class*="bg-[#5856D6]/5"],
+:root[data-theme="dark"] [class*="bg-[#FF3B30]/5"],
+:root[data-theme="dark"] [class*="bg-[#FF3B30]/10"],
+:root[data-theme="dark"] [class*="bg-[#C0392B]/10"] {
+  background-color: var(--maru-primary-soft) !important;
+}
+:root[data-theme="dark"] [class*="ring-[#1E3A5F]"],
+:root[data-theme="dark"] [class*="focus:ring-[#1E3A5F]"] {
+  --tw-ring-color: color-mix(in srgb, var(--maru-primary) 55%, transparent) !important;
+}
+
+:root[data-theme="dark"] input:not([type="range"]):not([type="checkbox"]):not([type="radio"]),
+:root[data-theme="dark"] textarea,
+:root[data-theme="dark"] select {
+  background-color: var(--maru-surface-muted);
+  color: var(--maru-text);
+  border-color: var(--maru-border);
+}
+:root[data-theme="dark"] input:not([type="range"]):focus,
+:root[data-theme="dark"] textarea:focus,
+:root[data-theme="dark"] select:focus {
+  border-color: var(--maru-primary);
+  outline: none;
+}
+
+:root[data-theme="dark"] .maru-read-scroll::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--maru-gold) 50%, transparent);
+}
+:root[data-theme="dark"] .maru-read-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--maru-gold-soft);
 }
 
 @layer utilities {
@@ -213,9 +413,12 @@
   .maru-app-view input, .maru-app-view textarea, .maru-app-view select { font-family: 'DM Sans', sans-serif; }
   .maru-app-view button { min-height: 40px; }
   .maru-app-view .bg-white { border-color: var(--maru-border-soft); }
-  .maru-app-view [class*="bg-[#F2F2F7]"], .maru-app-view [class*="bg-[#F5F1E8]"] { background: var(--maru-surface-muted) !important; }
-  .maru-app-view [class*="text-[#007AFF]"] { color: var(--maru-primary) !important; }
-  .maru-app-view [class*="bg-[#007AFF]"] { background: var(--maru-primary) !important; }
+  .maru-app-view h2,
+  .maru-app-view h3,
+  .maru-app-view label,
+  .maru-app-view p {
+    color: inherit;
+  }
   @media (max-width: 767px) {
     .maru-page-header { align-items: flex-start; flex-direction: column; }
   }
@@ -478,14 +681,14 @@
   }
 }
 
-/* ── Landing: Impacto (purple/blue glass) ── */
+/* ── Landing: Impacto (Andean teal / gold glass — matches MARU brand) ── */
 .maru-impact-section {
   background:
-    radial-gradient(ellipse 80% 60% at 12% 18%, rgba(139, 92, 246, 0.45), transparent 55%),
-    radial-gradient(ellipse 70% 55% at 88% 12%, rgba(59, 130, 246, 0.42), transparent 50%),
-    radial-gradient(ellipse 60% 50% at 50% 100%, rgba(99, 102, 241, 0.35), transparent 55%),
-    linear-gradient(155deg, #1e1b4b 0%, #312e81 28%, #1e3a8a 62%, #0f172a 100%);
-  color: #f8fafc;
+    radial-gradient(ellipse 80% 60% at 12% 18%, rgba(20, 125, 120, 0.42), transparent 55%),
+    radial-gradient(ellipse 70% 55% at 88% 12%, rgba(179, 136, 60, 0.22), transparent 50%),
+    radial-gradient(ellipse 60% 50% at 50% 100%, rgba(16, 43, 53, 0.55), transparent 55%),
+    linear-gradient(155deg, #0f2a32 0%, #163540 28%, #1a4548 62%, #0a1a20 100%);
+  color: #eef3f1;
 }
 
 .maru-impact-bg {
@@ -499,7 +702,7 @@
   position: absolute;
   border-radius: 9999px;
   filter: blur(40px);
-  opacity: 0.55;
+  opacity: 0.5;
 }
 
 .maru-impact-orb--a {
@@ -507,7 +710,7 @@
   height: min(42vw, 28rem);
   top: -12%;
   left: -8%;
-  background: radial-gradient(circle, rgba(167, 139, 250, 0.85), transparent 70%);
+  background: radial-gradient(circle, rgba(78, 196, 187, 0.7), transparent 70%);
   animation: maru-impact-float 14s ease-in-out infinite;
 }
 
@@ -516,7 +719,7 @@
   height: min(36vw, 24rem);
   top: 18%;
   right: -10%;
-  background: radial-gradient(circle, rgba(96, 165, 250, 0.75), transparent 70%);
+  background: radial-gradient(circle, rgba(212, 176, 106, 0.45), transparent 70%);
   animation: maru-impact-float 18s ease-in-out infinite reverse;
 }
 
@@ -525,35 +728,35 @@
   height: min(48vw, 32rem);
   bottom: -22%;
   left: 28%;
-  background: radial-gradient(circle, rgba(129, 140, 248, 0.55), transparent 70%);
+  background: radial-gradient(circle, rgba(26, 69, 72, 0.75), transparent 70%);
   animation: maru-impact-float 22s ease-in-out infinite;
 }
 
 .maru-impact-grid {
   position: absolute;
   inset: 0;
-  opacity: 0.14;
+  opacity: 0.12;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
   background-size: 48px 48px;
   mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 20%, transparent 75%);
 }
 
 .maru-impact-eyebrow {
-  color: #c4b5fd;
+  color: #c9ad72;
 }
 
 .maru-impact-card {
   border-radius: 1.25rem;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   box-shadow:
-    0 4px 24px rgba(15, 23, 42, 0.22),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(18px) saturate(1.25);
-  -webkit-backdrop-filter: blur(18px) saturate(1.25);
+    0 4px 24px rgba(7, 19, 22, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
   transition:
     transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 0.35s ease,
@@ -563,31 +766,31 @@
 
 .maru-impact-card:hover {
   transform: translateY(-6px);
-  border-color: rgba(196, 181, 253, 0.55);
+  border-color: rgba(78, 196, 187, 0.45);
   box-shadow:
-    0 18px 44px rgba(15, 23, 42, 0.35),
-    0 0 0 1px rgba(167, 139, 250, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.22);
-  background: rgba(255, 255, 255, 0.14);
+    0 18px 44px rgba(7, 19, 22, 0.4),
+    0 0 0 1px rgba(78, 196, 187, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .maru-impact-card--open {
-  border-color: rgba(196, 181, 253, 0.65);
-  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(78, 196, 187, 0.55);
+  background: rgba(255, 255, 255, 0.14);
 }
 
 .maru-impact-card__media {
   position: relative;
   aspect-ratio: 16 / 9;
   overflow: hidden;
-  background: linear-gradient(135deg, #312e81, #1e3a8a);
+  background: linear-gradient(135deg, #163540, #1a4548);
 }
 
 .maru-impact-card__media::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 55%, rgba(15, 23, 42, 0.35) 100%);
+  background: linear-gradient(180deg, transparent 55%, rgba(7, 19, 22, 0.4) 100%);
   pointer-events: none;
 }
 
@@ -611,10 +814,10 @@
   font-size: 0.8125rem;
   font-weight: 600;
   letter-spacing: 0.02em;
-  color: #1e1b4b;
-  background: linear-gradient(135deg, #e9e5ff 0%, #dbeafe 48%, #ffffff 100%);
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  box-shadow: 0 8px 20px rgba(30, 27, 75, 0.22);
+  color: #0c1f26;
+  background: linear-gradient(135deg, #dcefeb 0%, #e8f0ee 48%, #f7f9f7 100%);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 0 8px 20px rgba(7, 19, 22, 0.25);
   cursor: pointer;
   transition:
     transform 0.22s ease,
@@ -625,13 +828,13 @@
 
 .maru-impact-cta:hover {
   transform: translateY(-2px) scale(1.015);
-  filter: brightness(1.05);
-  box-shadow: 0 12px 28px rgba(79, 70, 229, 0.35);
-  background: linear-gradient(135deg, #f5f3ff 0%, #eff6ff 45%, #ffffff 100%);
+  filter: brightness(1.04);
+  box-shadow: 0 12px 28px rgba(20, 125, 120, 0.28);
+  background: linear-gradient(135deg, #e8f6f3 0%, #f0f7f5 45%, #ffffff 100%);
 }
 
 .maru-impact-cta:focus-visible {
-  outline: 2px solid #c4b5fd;
+  outline: 2px solid #4ec4bb;
   outline-offset: 3px;
 }
 
@@ -641,34 +844,40 @@
 
 :root[data-theme="dark"] .maru-impact-section {
   background:
-    radial-gradient(ellipse 80% 60% at 12% 18%, rgba(109, 40, 217, 0.38), transparent 55%),
-    radial-gradient(ellipse 70% 55% at 88% 12%, rgba(37, 99, 235, 0.36), transparent 50%),
-    radial-gradient(ellipse 60% 50% at 50% 100%, rgba(67, 56, 202, 0.3), transparent 55%),
-    linear-gradient(155deg, #0b1026 0%, #1e1b4b 32%, #172554 68%, #020617 100%);
+    radial-gradient(ellipse 80% 60% at 12% 18%, rgba(95, 212, 203, 0.18), transparent 55%),
+    radial-gradient(ellipse 70% 55% at 88% 12%, rgba(226, 192, 122, 0.12), transparent 50%),
+    radial-gradient(ellipse 60% 50% at 50% 100%, rgba(10, 18, 22, 0.85), transparent 55%),
+    linear-gradient(155deg, #050b0e 0%, #0a1216 34%, #111c22 70%, #050b0e 100%);
+  color: #f2f6f5;
 }
 
 :root[data-theme="dark"] .maru-impact-card {
-  background: rgba(15, 23, 42, 0.55);
-  border-color: rgba(196, 181, 253, 0.28);
+  background: rgba(26, 42, 50, 0.88);
+  border-color: rgba(95, 212, 203, 0.28);
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 10px 36px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 :root[data-theme="dark"] .maru-impact-card:hover,
 :root[data-theme="dark"] .maru-impact-card--open {
-  background: rgba(30, 41, 59, 0.72);
-  border-color: rgba(196, 181, 253, 0.5);
+  background: rgba(32, 52, 62, 0.95);
+  border-color: rgba(95, 212, 203, 0.48);
+}
+
+:root[data-theme="dark"] .maru-impact-eyebrow {
+  color: var(--maru-gold);
 }
 
 :root[data-theme="dark"] .maru-impact-cta {
-  color: #eef2ff;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.95) 0%, rgba(59, 130, 246, 0.9) 100%);
-  border-color: rgba(196, 181, 253, 0.4);
+  color: #061014;
+  background: linear-gradient(135deg, #5fd4cb 0%, #7ee0d8 58%, #e2c07a 160%);
+  border-color: rgba(95, 212, 203, 0.5);
+  font-weight: 700;
 }
 
 :root[data-theme="dark"] .maru-impact-cta:hover {
-  background: linear-gradient(135deg, rgba(129, 140, 248, 1) 0%, rgba(96, 165, 250, 0.95) 100%);
+  background: linear-gradient(135deg, #7ee0d8 0%, #9aeadf 58%, #f0d49a 160%);
 }
 
 @keyframes maru-impact-float {
